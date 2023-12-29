@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="10" prefHeight="412.0" prefWidth="813.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="contollers.changeLogUIController" style="-fx-background-color: #444444;">
+    <padding>
+        <Insets bottom="20" left="20" right="20" top="20" />
+    </padding>
+
+    <Label alignment="CENTER" style="-fx-font-size: 20; -fx-text-fill: white; -fx-border-color: transparent; -fx-border-width: 2px; -fx-background-color: transparent;" text="Change Log Table" VBox.vgrow="NEVER">
+    <VBox.margin>
+            <Insets bottom="20" />
+        </VBox.margin>
+    </Label>
+
+    <Button mnemonicParsing="false" onAction="#deleteAllLogs" style="-fx-font-size: 14; -fx-background-color: #333333; -fx-text-fill: #FFFFFF; -fx-border-color: transparent;" text="Delete all Logs" />
+
+    <TableView fx:id="databaseTable" style="-fx-font-size: 14; -fx-background-color: #252525;">
+        <columns>
+            <TableColumn fx:id="timeChange" prefWidth="179.0" text="Time">
+                <style>
+                    -fx-text-fill: #000000;
+                </style>
+            </TableColumn>
+            <TableColumn fx:id="userPlatformColumn" prefWidth="111.0" text="User Platform">
+                <style>
+                    -fx-text-fill: #000000;
+                </style>
+            </TableColumn>
+            <TableColumn fx:id="userNameColumn" prefWidth="129.0" text="User Name">
+                <style>
+                    -fx-text-fill: #000000;
+                </style>
+            </TableColumn>
+            <TableColumn fx:id="userEmailColumn" minWidth="0.0" prefWidth="116.0" text="User Email">
+                <style>
+                    -fx-text-fill: #000000;
+                </style>
+            </TableColumn>
+            <TableColumn fx:id="userPasswordColumn" prefWidth="116.0" text="User Password">
+                <style>
+                    -fx-text-fill: #000000;
+                </style>
+            </TableColumn>
+            <TableColumn fx:id="actionColumn" prefWidth="96.0" text="Action">
+                <style>
+                    -fx-text-fill: #000000;
+                </style>
+            </TableColumn>
+        </columns>
+    </TableView>
+
+    <Button mnemonicParsing="false" onAction="#changeScene" style="-fx-font-size: 14; -fx-background-color: #333333; -fx-text-fill: #FFFFFF; -fx-border-color: transparent;" text="Go back" />
+</VBox>

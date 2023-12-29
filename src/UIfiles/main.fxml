@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox alignment="CENTER" spacing="10" style="-fx-background-color: #222; -fx-text-fill: white;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="contollers.mainController">
+    <padding>
+        <Insets bottom="20" left="20" right="20" top="20" />
+    </padding>
+    <TextArea fx:id="keyArea" prefHeight="104.0" prefWidth="478.0" promptText="Paste, or type your key here" style="-fx-control-inner-background: #333; -fx-text-fill: white;" VBox.vgrow="ALWAYS" />
+    <HBox alignment="CENTER" prefHeight="16.0" prefWidth="478.0" spacing="10">
+        <children>
+            <Button fx:id="loadKeyButton" onAction="#btnPresses" style="-fx-background-color: #555; -fx-text-fill: white;" text="Load Key File" />
+            <Button fx:id="LoadDataBase" onAction="#btnPresses" style="-fx-background-color: #555; -fx-text-fill: white;" text="Load Database">
+                <graphic>
+                    <CheckBox fx:id="otherDbCheck" disable="true" mnemonicParsing="false" />
+                </graphic>
+            </Button>
+            <Button fx:id="useDefaultButton" mnemonicParsing="false" style="-fx-background-color: #555; -fx-text-fill: white;" text="Use Default">
+                <graphic>
+                    <CheckBox fx:id="defaultCheck" disable="true" mnemonicParsing="false" />
+                </graphic>
+            </Button>
+        </children>
+    </HBox>
+    <HBox alignment="CENTER" prefHeight="10.0" prefWidth="478.0" spacing="10">
+        <children>
+            <Button fx:id="resetBtn" mnemonicParsing="false" onAction="#btnPresses" prefHeight="25.0" prefWidth="109.0" style="-fx-background-color: #555; -fx-text-fill: white;" text="Reset" />
+            <Button fx:id="createNewButton" onAction="#btnPresses" prefHeight="25.0" prefWidth="115.0" style="-fx-background-color: #555; -fx-text-fill: white;" text="Create New" />
+            <Button fx:id="proceedBtn" mnemonicParsing="false" onAction="#btnPresses" prefWidth="100.0" style="-fx-background-color: #555; -fx-text-fill: white;" text="Proceed" />
+        </children>
+    </HBox>
+
+</VBox>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox prefHeight="448.0" prefWidth="732.0" spacing="10" style="-fx-background-color: #444444;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="contollers.AccountsUIController">
+    <padding>
+        <Insets bottom="20" left="20" right="20" top="20" />
+    </padding>
+
+    <TextArea fx:id="passwordTextArea" prefHeight="100.0" prefWidth="200.0" style="-fx-control-inner-background: #252525; -fx-text-fill: #FFFFFF;" />
+
+    <ToolBar prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: #444444;">
+        <items>
+            <Spinner fx:id="passwordLength" style="-fx-color: #FFFFFF;">
+                <valueFactory>
+                    <SpinnerValueFactory.IntegerSpinnerValueFactory max="50" min="4" />
+                </valueFactory>
+            </Spinner>
+            <Button fx:id="generateRandomPass" onAction="#buttonEvent" style="-fx-font-size: 14; -fx-background-color: #333333; -fx-text-fill: #FFFFFF;" text="Generate Password" />
+            <Button fx:id="copyGenPassword" mnemonicParsing="false" onAction="#buttonEvent" style="-fx-font-size: 14; -fx-background-color: #333333; -fx-text-fill: #FFFFFF;" text="Copy Generated Password" />
+            <Button fx:id="addAccountRecord" alignment="CENTER" mnemonicParsing="false" onAction="#buttonEvent" style="-fx-font-size: 14; -fx-background-color: #333333; -fx-text-fill: #FFFFFF;" text="Add Account Record" />
+            <Button fx:id="reEncrypt" alignment="CENTER" layoutX="495.0" layoutY="11.0" mnemonicParsing="false" onAction="#buttonEvent" style="-fx-font-size: 14; -fx-background-color: #333333; -fx-text-fill: #FFFFFF;" text="Re Encrypt" />
+            <Button fx:id="exportToText" alignment="CENTER" layoutX="495.0" layoutY="11.0" mnemonicParsing="false" onAction="#buttonEvent" style="-fx-font-size: 14; -fx-background-color: #333333; -fx-text-fill: #FFFFFF;" text="Export to Text" />
+        </items>
+    </ToolBar>
+    <TextArea fx:id="searchArea" layoutX="30.0" layoutY="30.0" prefHeight="100.0" prefWidth="200.0" style="-fx-control-inner-background: #252525; -fx-text-fill: #FFFFFF;" />
+    <ToolBar prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: #444444;">
+        <items>
+            <Button fx:id="searchBtn" alignment="CENTER" layoutX="495.0" layoutY="11.0" mnemonicParsing="false" onAction="#buttonEvent" style="-fx-font-size: 14; -fx-background-color: #333333; -fx-text-fill: #FFFFFF;" text="Search" />
+            <Button fx:id="refreshTblButton" alignment="CENTER" layoutX="495.0" layoutY="11.0" mnemonicParsing="false" onAction="#buttonEvent" style="-fx-font-size: 14; -fx-background-color: #333333; -fx-text-fill: #FFFFFF;" text="Refresh" />
+            <Button fx:id="clearSearchBtn" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#buttonEvent" style="-fx-font-size: 14; -fx-background-color: #333333; -fx-text-fill: #FFFFFF;" text="Clear Search" />
+        </items>
+    </ToolBar>
+    <TableView fx:id="databaseTable" style="-fx-font-size: 14; -fx-background-color: #252525;">
+        <columns>
+            <TableColumn fx:id="userPlatformColumn" prefWidth="145.0" text="User Platform">
+                <style>
+                    -fx-text-fill: #000000;
+                </style>
+            </TableColumn>
+            <TableColumn fx:id="userNameColumn" prefWidth="117.0" text="User Name">
+                <style>
+                    -fx-text-fill: #000000;
+                </style>
+            </TableColumn>
+            <TableColumn fx:id="userEmailColumn" minWidth="0.0" prefWidth="128.0" text="User Email">
+                <style>
+                    -fx-text-fill: #000000;
+                </style>
+            </TableColumn>
+            <TableColumn fx:id="userPasswordColumn" prefWidth="150.0" text="User Password">
+                <style>
+                    -fx-text-fill: #000000;
+                </style>
+            </TableColumn>
+            <TableColumn fx:id="actionColumn" prefWidth="149.0" text="Action">
+                <style>
+                    -fx-text-fill: #000000;
+                </style>
+            </TableColumn>
+        </columns>
+    </TableView>
+
+    <HBox prefHeight="200.0" prefWidth="100.0" spacing="10">
+        <children>
+            <Button fx:id="changeLogBtn" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#buttonEvent" style="-fx-font-size: 14; -fx-background-color: #333333; -fx-text-fill: #FFFFFF;" text="Change Log Screen" />
+            <Button fx:id="backToMain" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#buttonEvent" style="-fx-font-size: 14; -fx-background-color: #333333; -fx-text-fill: #FFFFFF;" text="back to Main" />
+        </children>
+    </HBox>
+</VBox>
