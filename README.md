@@ -14,4 +14,4 @@ The Java application follows the lock-and-key model, where there is a key in the
 - Allows searching based on platforms.
 - Supports exporting of accounts via a text file.
 - Provides basic CRUD operations on accounts.
-- Tracks history updates of accounts and deletion of specific and all history.
+- Tracks history updates of accounts and the capability to delete specific and all history.
