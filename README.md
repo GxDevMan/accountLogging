@@ -4,6 +4,11 @@ This project was created to securely encrypt account details, including password
 
 The Java application follows the lock-and-key model, where there is a key in the form of a .key file and a database in the form of a .db file. Specific rows within the database are encrypted. Note that the .db file itself is not encrypted.
 
+## Requirements
+
+- Java 14 and up
+- sql lite jdbc (for development)
+
 ## Features
 - Utilizes AES 256 encryption standard.
 - Allows searching based on platforms.
