@@ -21,9 +21,10 @@
             <Button fx:id="generateRandomPass" onAction="#buttonEvent" style="-fx-font-size: 14; -fx-background-color: #333333; -fx-text-fill: #FFFFFF;" text="Generate Password" />
             <Button fx:id="copyGenPassword" mnemonicParsing="false" onAction="#buttonEvent" style="-fx-font-size: 14; -fx-background-color: #333333; -fx-text-fill: #FFFFFF;" text="Copy Generated Password" />
             <Button fx:id="addAccountRecord" alignment="CENTER" mnemonicParsing="false" onAction="#buttonEvent" style="-fx-font-size: 14; -fx-background-color: #333333; -fx-text-fill: #FFFFFF;" text="Add Account Record" />
-            <Button fx:id="reEncrypt" alignment="CENTER" layoutX="495.0" layoutY="11.0" mnemonicParsing="false" onAction="#buttonEvent" style="-fx-font-size: 14; -fx-background-color: #333333; -fx-text-fill: #FFFFFF;" text="Re Encrypt" />
-            <Button fx:id="exportToText" alignment="CENTER" layoutX="495.0" layoutY="11.0" mnemonicParsing="false" onAction="#buttonEvent" style="-fx-font-size: 14; -fx-background-color: #333333; -fx-text-fill: #FFFFFF;" text="Export to Text" />
+            <Button fx:id="importJsonText" alignment="CENTER" layoutX="495.0" layoutY="11.0" mnemonicParsing="false" onAction="#buttonEvent" style="-fx-font-size: 14; -fx-background-color: #333333; -fx-text-fill: #FFFFFF;" text="Import Accounts" />
             <Button fx:id="exportToRawJsonText" alignment="CENTER" layoutX="495.0" layoutY="11.0" mnemonicParsing="false" onAction="#buttonEvent" style="-fx-font-size: 14; -fx-background-color: #333333; -fx-text-fill: #FFFFFF;" text="Export to Raw Json" />
+            <Button fx:id="exportToText" alignment="CENTER" layoutX="495.0" layoutY="11.0" mnemonicParsing="false" onAction="#buttonEvent" style="-fx-font-size: 14; -fx-background-color: #333333; -fx-text-fill: #FFFFFF;" text="Export to Text" />
+            <Button fx:id="reEncrypt" alignment="CENTER" layoutX="495.0" layoutY="11.0" mnemonicParsing="false" onAction="#buttonEvent" style="-fx-font-size: 14; -fx-background-color: #333333; -fx-text-fill: #FFFFFF;" text="Re Encrypt" />
         </items>
     </ToolBar>
     <TextArea fx:id="searchArea" layoutX="30.0" layoutY="30.0" prefHeight="100.0" prefWidth="200.0" style="-fx-control-inner-background: #252525; -fx-text-fill: #FFFFFF;" />

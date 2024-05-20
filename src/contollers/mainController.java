@@ -196,8 +196,13 @@ public class mainController implements Initializable {
                 AccountsUIController controller = loader.getController();
                 controller.setController(this.handleSql, this.loadedKey, this.dbLocation);
 
+
                 Stage sourceWin = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 sourceWin.setScene(viewScene);
+
+                String stageTitle = sourceWin.getTitle();
+                sourceWin.setTitle(String.format("%s - %s.db", stageTitle, this.handleSql.getFileName()));
+
                 sourceWin.show();
                 return;
             }

@@ -17,6 +17,7 @@ import javafx.scene.image.Image;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.GridPane;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.*;
@@ -24,7 +25,7 @@ import model.cellFactories.CopyButtonCellFactory;
 import model.cellFactories.accountActionsCellFactory;
 import model.interfaces.accountActionsInterface;
 import model.objects.accountObject;
-
+import model.jsonActions;
 import javax.crypto.SecretKey;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -43,6 +44,7 @@ public class AccountsUIController implements Initializable, accountActionsInterf
     private encryptdecryptHandler decryptHandler;
     private String dbLoc;
     private ResultSet rs;
+    private jsonActions actionJSON;
 
     @FXML
     private TextArea passwordTextArea;
@@ -90,6 +92,8 @@ public class AccountsUIController implements Initializable, accountActionsInterf
     private Button exportToText;
     @FXML
     private Button exportToRawJsonText;
+    @FXML
+    private Button importJsonText;
 
     @FXML
     private Spinner<Integer> passwordLength;
@@ -109,6 +113,7 @@ public class AccountsUIController implements Initializable, accountActionsInterf
         userPasswordColumn.setCellValueFactory(new PropertyValueFactory<>("userPassword"));
 
         actionColumn.setCellFactory(new accountActionsCellFactory<>(this));
+
     }
 
     public AccountsUIController() {
@@ -167,7 +172,11 @@ public class AccountsUIController implements Initializable, accountActionsInterf
         }
 
         if(event.getSource().equals(exportToRawJsonText)){
-            exportToJsonFile();
+            showExportDialog();
+        }
+
+        if(event.getSource().equals(importJsonText)){
+            importJson();
         }
     }
 
@@ -201,6 +210,9 @@ public class AccountsUIController implements Initializable, accountActionsInterf
         this.handleSql = handleSql;
         this.dbLoc = dbLoc;
         this.handleSql.setKey(this.key);
+        this.actionJSON = new jsonActions();
+
+
         rs = handleSql.selectAccounts();
         refreshTable();
     }
@@ -411,46 +423,11 @@ public class AccountsUIController implements Initializable, accountActionsInterf
         }
     }
 
-    private void exportToTextFile() {
+    private void exportToJsonFile(boolean decrypted) {
         String appLocation = System.getProperty("user.dir");
-        String textFileLoc = appLocation + File.separator + "exportedAccounts.txt";
 
-        try {
-            File newTxtFile = new File(textFileLoc);
-
-            FileWriter fileWriter = new FileWriter(textFileLoc);
-
-            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-
-            ObservableList<accountObject> listOfAccounts = databaseTable.getItems();
-
-            for (accountObject eachAccount : listOfAccounts) {
-                String compilation = "User Platform: %s \n" +
-                        "User Name: %s \n" +
-                        "User Email: %s \n" +
-                        "User Password: %s \n";
-
-                bufferedWriter.write(String.format(compilation
-                        , eachAccount.getUserPlatform()
-                        , eachAccount.getUserName()
-                        , eachAccount.getUserEmail()
-                        , eachAccount.getUserPassword()));
-
-                bufferedWriter.write("\n");
-            }
-            bufferedWriter.close();
-            fileWriter.close();
-
-            passwordTextArea.setText("Accounts Exported");
-        } catch (Exception e) {
-            passwordTextArea.setText("Accounts Failed to Export");
-            e.printStackTrace();
-        }
-    }
-
-    private void exportToJsonFile() {
-        String appLocation = System.getProperty("user.dir");
-        String jsonFileLoc = appLocation + File.separator + "exportedAccounts.json";
+        String formString = String.format("%s.json", this.handleSql.getFileName());
+        String jsonFileLoc = appLocation + File.separator + formString;
 
         try {
             File newJsonFile = new File(jsonFileLoc);
@@ -464,14 +441,25 @@ public class AccountsUIController implements Initializable, accountActionsInterf
 
             try {
                 while (rawResult.next()) {
-                    int accountId = rawResult.getInt(1);
-                    String platform = rawResult.getString(2);
-                    String name = rawResult.getString(3);
-                    String email = rawResult.getString(4);
-                    String password = rawResult.getString(5);
+                    if(decrypted){
+                        int accountId = rawResult.getInt(1);
+                        String platform = rawResult.getString(2);
+                        String name = this.decryptHandler.decrypt(rawResult.getString(3),this.key);
+                        String email = this.decryptHandler.decrypt(rawResult.getString(4), this.key);
+                        String password = this.decryptHandler.decrypt(rawResult.getString(5), this.key);
+                        accountObject account = new accountObject(accountId, platform, name, email, password);
+                        listOfAccounts.add(account);
 
-                    accountObject account = new accountObject(accountId, platform, name, email, password);
-                    listOfAccounts.add(account);
+                    }
+                    else{
+                        int accountId = rawResult.getInt(1);
+                        String platform = rawResult.getString(2);
+                        String name = rawResult.getString(3);
+                        String email = rawResult.getString(4);
+                        String password = rawResult.getString(5);
+                        accountObject account = new accountObject(accountId, platform, name, email, password);
+                        listOfAccounts.add(account);
+                    }
                 }
             } catch (Exception e) {
                 this.passwordTextArea.setText("ERROR GETTING ACCOUNTS");
@@ -518,6 +506,83 @@ public class AccountsUIController implements Initializable, accountActionsInterf
         }
     }
 
+    private void exportToTextFile() {
+        String appLocation = System.getProperty("user.dir");
+
+        String formString = String.format("%s.txt", this.handleSql.getFileName());
+        String textFileLoc = appLocation + File.separator + formString;
+
+        try {
+            File newTxtFile = new File(textFileLoc);
+
+            FileWriter fileWriter = new FileWriter(textFileLoc);
+
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+
+            ObservableList<accountObject> listOfAccounts = databaseTable.getItems();
+
+            for (accountObject eachAccount : listOfAccounts) {
+                String compilation = "User Platform: %s \n" +
+                        "User Name: %s \n" +
+                        "User Email: %s \n" +
+                        "User Password: %s \n";
+
+                bufferedWriter.write(String.format(compilation
+                        , eachAccount.getUserPlatform()
+                        , eachAccount.getUserName()
+                        , eachAccount.getUserEmail()
+                        , eachAccount.getUserPassword()));
+
+                bufferedWriter.write("\n");
+            }
+            bufferedWriter.close();
+            fileWriter.close();
+
+            passwordTextArea.setText("Accounts Exported");
+        } catch (Exception e) {
+            passwordTextArea.setText("Accounts Failed to Export");
+            e.printStackTrace();
+        }
+    }
+
+    private void showExportDialog() {
+        Stage dialog = new Stage();
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        dialog.setTitle("Export JSON");
+
+        Image icon = new Image("/UIfiles/ico.png");
+        dialog.getIcons().add(icon);
+
+
+        GridPane dialogPane = new GridPane();
+        dialogPane.setAlignment(Pos.CENTER);
+        dialogPane.setPadding(new Insets(10));
+        dialogPane.setHgap(10);
+        dialogPane.setVgap(10);
+
+        Label messageLabel = new Label("Do you want to export as Encrypted or Raw JSON?");
+        Button encryptedButton = new Button("Encrypted");
+        Button decryptedButton = new Button("Decrypted");
+
+        encryptedButton.setOnAction(event -> {
+            exportToJsonFile(false);
+            dialog.close();
+        });
+
+        decryptedButton.setOnAction(event -> {
+            exportToJsonFile(true);
+            dialog.close();
+        });
+
+        dialogPane.add(messageLabel, 0, 0, 2, 1);
+        dialogPane.add(encryptedButton, 0, 1);
+        dialogPane.add(decryptedButton, 1, 1);
+
+        Scene dialogScene = new Scene(dialogPane, 300, 150);
+        dialog.setScene(dialogScene);
+        dialog.showAndWait();
+    }
+
     private String escapeJson(String value) {
         if (value == null) {
             return "";
@@ -531,4 +596,36 @@ public class AccountsUIController implements Initializable, accountActionsInterf
                 .replace("\r", "\\r")
                 .replace("\t", "\\t");
     }
+
+    private void importJson(){
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Import Accounts via JSON");
+
+        String currentWorkingDirectory = System.getProperty("user.dir");
+        fileChooser.setInitialDirectory(new File(currentWorkingDirectory));
+
+        FileChooser.ExtensionFilter jsonFilter = new FileChooser.ExtensionFilter("Key File (*.json)", "*.json");
+        fileChooser.getExtensionFilters().addAll(jsonFilter);
+
+        // Show the file chooser dialog and get the selected file
+        File selectedFile = fileChooser.showOpenDialog(null);
+
+        if (selectedFile != null) {
+            // Perform operations on the selected file
+            String filePath = selectedFile.getAbsolutePath();
+            try {
+               this.actionJSON.importDataJson(filePath,this.handleSql);
+               this.rs = this.handleSql.selectAccounts();
+                refreshTable();
+                passwordTextArea.setText("ACCOUNTS LOADED");
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                passwordTextArea.setText("Error Loading Accounts via JSON");
+            }
+
+
+        }
+    }
+
 }

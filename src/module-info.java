@@ -2,6 +2,7 @@ module accountLogging {
     requires javafx.fxml;
     requires javafx.controls;
     requires java.sql;
+    requires com.google.gson;
     opens Main;
     opens UIfiles;
     opens model;

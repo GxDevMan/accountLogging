@@ -5,6 +5,7 @@ import javax.crypto.SecretKey;
 import java.io.File;
 import java.sql.*;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class sqlLiteHandler {
@@ -13,7 +14,11 @@ public class sqlLiteHandler {
     private SecretKey standardKey;
     private encryptdecryptHandler handleEncrypt;
     private String dbUrl;
+    private String fileName;
 
+    public String getFileName(){
+        return this.fileName;
+    }
 
     public sqlLiteHandler() {
         this.handleEncrypt = new encryptdecryptHandler();
@@ -34,6 +39,14 @@ public class sqlLiteHandler {
             if (databaseCheck.exists()) {
                 this.dbUrl = "jdbc:sqlite:" + location;
                 this.connection = DriverManager.getConnection(dbUrl);
+                File file = new File(location);
+                try{
+                String retreivedFilename[] = file.getName().split("\\.");
+                this.fileName = retreivedFilename[0];
+                String test = retreivedFilename[1];
+                } catch (Exception e){
+                    this.fileName = "accounts";
+                }
                 return true;
             }
 
@@ -212,6 +225,68 @@ public class sqlLiteHandler {
             conn.close();
 
             return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean insertNewAccBatch(ArrayList<accountObject> accountList) {
+        String insertQuery = "INSERT INTO Accounts (userPlatform, userName, userEmail, userPassword) VALUES (?, ?, ?, ?)";
+        String changeLogQuery = "INSERT INTO changeLog (accountId, time, userName, userEmail, userPassword) VALUES (?, ?, ?, ?, ?)";
+
+        try (Connection conn = DriverManager.getConnection(dbUrl)) {
+            conn.setAutoCommit(false);  // Disable auto-commit mode
+
+            try (PreparedStatement pstmtAcc = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS);
+                 PreparedStatement pstmtLog = conn.prepareStatement(changeLogQuery)) {
+
+                for (accountObject newAccount : accountList) {
+                    String platform = newAccount.getUserPlatform();
+                    String name = handleEncrypt.encrypt(newAccount.getUserName(), this.standardKey);
+                    String email = handleEncrypt.encrypt(newAccount.getUserEmail(), this.standardKey);
+                    String password = handleEncrypt.encrypt(newAccount.getUserPassword(), this.standardKey);
+
+                    pstmtAcc.setString(1, platform);
+                    pstmtAcc.setString(2, name);
+                    pstmtAcc.setString(3, email);
+                    pstmtAcc.setString(4, password);
+                    pstmtAcc.addBatch();
+                }
+
+                int[] affectedRows = pstmtAcc.executeBatch();  // Execute the batch for Accounts table
+
+                ResultSet generatedKeys = pstmtAcc.getGeneratedKeys();
+                int index = 0;
+                while (generatedKeys.next()) {
+                    int generatedKey = generatedKeys.getInt(1);
+
+                    accountObject newAccount = accountList.get(index++);
+                    String name = handleEncrypt.encrypt(newAccount.getUserName(), this.standardKey);
+                    String email = handleEncrypt.encrypt(newAccount.getUserEmail(), this.standardKey);
+                    String password = handleEncrypt.encrypt(newAccount.getUserPassword(), this.standardKey);
+
+                    Date now = new Date();
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+                    String formattedDateTime = sdf.format(now);
+
+                    pstmtLog.setInt(1, generatedKey);
+                    pstmtLog.setString(2, formattedDateTime);
+                    pstmtLog.setString(3, name);
+                    pstmtLog.setString(4, email);
+                    pstmtLog.setString(5, password);
+                    pstmtLog.addBatch();
+                }
+
+                pstmtLog.executeBatch();  // Execute the batch for changeLog table
+
+                conn.commit();  // Commit the transaction
+
+                return true;
+            } catch (SQLException e) {
+                conn.rollback();  // Rollback the transaction on error
+                e.printStackTrace();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
