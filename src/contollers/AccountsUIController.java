@@ -200,6 +200,10 @@ public class AccountsUIController implements Initializable, accountActionsInterf
         Parent viewParent = loader.load();
         Scene viewScene = new Scene(viewParent);
         Stage sourceWin = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+        String stageTitle[] = sourceWin.getTitle().split("-");
+        sourceWin.setTitle(String.format("%s", stageTitle[0].strip()));
+
         sourceWin.setScene(viewScene);
         sourceWin.show();
         return;
