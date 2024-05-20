@@ -1,5 +1,6 @@
 package contollers;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -87,6 +88,8 @@ public class AccountsUIController implements Initializable, accountActionsInterf
     private Button clearSearchBtn;
     @FXML
     private Button exportToText;
+    @FXML
+    private Button exportToRawJsonText;
 
     @FXML
     private Spinner<Integer> passwordLength;
@@ -161,6 +164,10 @@ public class AccountsUIController implements Initializable, accountActionsInterf
         }
         if (event.getSource().equals(exportToText)) {
             exportToTextFile();
+        }
+
+        if(event.getSource().equals(exportToRawJsonText)){
+            exportToJsonFile();
         }
     }
 
@@ -405,8 +412,6 @@ public class AccountsUIController implements Initializable, accountActionsInterf
     }
 
     private void exportToTextFile() {
-        System.out.println("TEST");
-
         String appLocation = System.getProperty("user.dir");
         String textFileLoc = appLocation + File.separator + "exportedAccounts.txt";
 
@@ -441,5 +446,89 @@ public class AccountsUIController implements Initializable, accountActionsInterf
             passwordTextArea.setText("Accounts Failed to Export");
             e.printStackTrace();
         }
+    }
+
+    private void exportToJsonFile() {
+        String appLocation = System.getProperty("user.dir");
+        String jsonFileLoc = appLocation + File.separator + "exportedAccounts.json";
+
+        try {
+            File newJsonFile = new File(jsonFileLoc);
+
+            FileWriter fileWriter = new FileWriter(jsonFileLoc);
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+
+            ResultSet rawResult = this.handleSql.selectAccounts();
+
+            ObservableList<accountObject> listOfAccounts = FXCollections.observableArrayList();
+
+            try {
+                while (rawResult.next()) {
+                    int accountId = rawResult.getInt(1);
+                    String platform = rawResult.getString(2);
+                    String name = rawResult.getString(3);
+                    String email = rawResult.getString(4);
+                    String password = rawResult.getString(5);
+
+                    accountObject account = new accountObject(accountId, platform, name, email, password);
+                    listOfAccounts.add(account);
+                }
+            } catch (Exception e) {
+                this.passwordTextArea.setText("ERROR GETTING ACCOUNTS");
+                e.printStackTrace();
+            }
+
+            // Start of JSON array
+            bufferedWriter.write("[\n");
+
+            for (int i = 0; i < listOfAccounts.size(); i++) {
+                accountObject eachAccount = listOfAccounts.get(i);
+                String jsonAccount = String.format(
+                        "  {\n" +
+                                "    \"userPlatform\": \"%s\",\n" +
+                                "    \"userName\": \"%s\",\n" +
+                                "    \"userEmail\": \"%s\",\n" +
+                                "    \"userPassword\": \"%s\"\n" +
+                                "  }",
+                        escapeJson(eachAccount.getUserPlatform()),
+                        escapeJson(eachAccount.getUserName()),
+                        escapeJson(eachAccount.getUserEmail()),
+                        escapeJson(eachAccount.getUserPassword())
+                );
+
+                // Add comma after each JSON object except the last one
+                if (i < listOfAccounts.size() - 1) {
+                    jsonAccount += ",";
+                }
+                jsonAccount += "\n";
+
+                bufferedWriter.write(jsonAccount);
+            }
+
+            // End of JSON array
+            bufferedWriter.write("]\n");
+
+            bufferedWriter.close();
+            fileWriter.close();
+
+            passwordTextArea.setText("Accounts Exported to JSON");
+        } catch (IOException e) {
+            passwordTextArea.setText("Accounts Failed to Export");
+            e.printStackTrace();
+        }
+    }
+
+    private String escapeJson(String value) {
+        if (value == null) {
+            return "";
+        }
+        return value.replace("\"", "\\\"")
+                .replace("\\", "\\\\")
+                .replace("/", "\\/")
+                .replace("\b", "\\b")
+                .replace("\f", "\\f")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r")
+                .replace("\t", "\\t");
     }
 }

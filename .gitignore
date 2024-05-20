@@ -37,3 +37,6 @@ Desktop.ini
 
 # Ignore key files
 *.key
+
+# Ignore json files
+*.json
