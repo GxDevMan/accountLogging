@@ -6,10 +6,7 @@ import com.google.gson.JsonParser;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-
 import model.objects.accountObject;
-import javax.crypto.SecretKey;
-
 
 public class jsonActions {
 
@@ -22,14 +19,7 @@ public class jsonActions {
             ArrayList<accountObject> newAccountList = new ArrayList<>();
 
             for (JsonElement element : jsonArray) {
-                JsonObject jsonObject = element.getAsJsonObject();
-
-                // Extract values using keys
-                String userPlatform = jsonObject.get("userPlatform").getAsString();
-                String userName = jsonObject.get("userName").getAsString();
-                String userEmail = jsonObject.get("userEmail").getAsString();
-                String userPassword = jsonObject.get("userPassword").getAsString();
-                accountObject newAccount = new accountObject(userPlatform, userName, userEmail,userPassword);
+                accountObject newAccount = getAccountObject(element);
                 newAccountList.add(newAccount);
             }
             return handleSql.insertNewAccBatch(newAccountList);
@@ -37,6 +27,18 @@ public class jsonActions {
             e.printStackTrace();
             return false;
         }
+    }
+
+    private static accountObject getAccountObject(JsonElement element) {
+        JsonObject jsonObject = element.getAsJsonObject();
+
+        // Extract values using keys
+        String userPlatform = jsonObject.get("userPlatform").getAsString();
+        String userName = jsonObject.get("userName").getAsString();
+        String userEmail = jsonObject.get("userEmail").getAsString();
+        String userPassword = jsonObject.get("userPassword").getAsString();
+        accountObject newAccount = new accountObject(userPlatform, userName, userEmail,userPassword);
+        return newAccount;
     }
 
 

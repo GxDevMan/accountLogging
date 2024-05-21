@@ -45,6 +45,7 @@ public class AccountsUIController implements Initializable, accountActionsInterf
     private String dbLoc;
     private ResultSet rs;
     private jsonActions actionJSON;
+    private Stage primaryStage;
 
     @FXML
     private TextArea passwordTextArea;
@@ -176,7 +177,7 @@ public class AccountsUIController implements Initializable, accountActionsInterf
         }
 
         if(event.getSource().equals(importJsonText)){
-            importJson();
+            importJson(importJsonText);
         }
     }
 
@@ -215,7 +216,6 @@ public class AccountsUIController implements Initializable, accountActionsInterf
         this.dbLoc = dbLoc;
         this.handleSql.setKey(this.key);
         this.actionJSON = new jsonActions();
-
 
         rs = handleSql.selectAccounts();
         refreshTable();
@@ -601,34 +601,36 @@ public class AccountsUIController implements Initializable, accountActionsInterf
                 .replace("\t", "\\t");
     }
 
-    private void importJson(){
+    private void importJson(Button importJsonTry) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Import Accounts via JSON");
 
         String currentWorkingDirectory = System.getProperty("user.dir");
         fileChooser.setInitialDirectory(new File(currentWorkingDirectory));
 
-        FileChooser.ExtensionFilter jsonFilter = new FileChooser.ExtensionFilter("Key File (*.json)", "*.json");
+        FileChooser.ExtensionFilter jsonFilter = new FileChooser.ExtensionFilter("JSON File (*.json)", "*.json");
         fileChooser.getExtensionFilters().addAll(jsonFilter);
 
         // Show the file chooser dialog and get the selected file
-        File selectedFile = fileChooser.showOpenDialog(null);
+        File selectedFile = fileChooser.showOpenDialog(importJsonTry.getScene().getWindow());
 
         if (selectedFile != null) {
             // Perform operations on the selected file
             String filePath = selectedFile.getAbsolutePath();
             try {
-               this.actionJSON.importDataJson(filePath,this.handleSql);
-               this.rs = this.handleSql.selectAccounts();
-                refreshTable();
-                passwordTextArea.setText("ACCOUNTS LOADED");
-
+                if (this.actionJSON.importDataJson(filePath, this.handleSql)) {
+                    this.rs = this.handleSql.selectAccounts();
+                    refreshTable();
+                    passwordTextArea.setText("ACCOUNTS LOADED");
+                } else {
+                    passwordTextArea.setText("ACCOUNTS NOT LOADED!!!");
+                }
             } catch (Exception e) {
-                e.printStackTrace();
                 passwordTextArea.setText("Error Loading Accounts via JSON");
+                e.printStackTrace();
             }
-
-
+        } else {
+            passwordTextArea.setText("No file selected");
         }
     }
 
