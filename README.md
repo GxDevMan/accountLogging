@@ -10,8 +10,10 @@ The Java application follows the lock-and-key model, where there is a key in the
 - sql lite jdbc (for development)
 
 ## Features
-- Utilizes AES 256 encryption standard.
+- Utilizes AES 256 GCM encryption standard.
 - Allows searching based on platforms.
 - Supports exporting of accounts via a text file.
+- export to JSON, options include encrypted or unencrypted
+- importing via JSON with the same format as the exported
 - Provides basic CRUD operations on accounts.
 - Tracks history updates of accounts and the capability to delete specific and all history.
